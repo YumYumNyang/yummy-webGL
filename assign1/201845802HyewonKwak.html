@@ -1,20 +1,22 @@
 <doctype html>
-<!-- Copyright 2020, Cem Yuksel, University of Utah -->
 <html>
 <head>
-<title>CS 4600 - WebGL Example: Square</title>
+<title>201845802 곽혜원</title>
 
 <script id="vertexShader" type="x-shader/x-vertex">
 attribute vec3 pos;
 attribute vec4 clr;
 
-uniform mat4 trans;
+
+uniform mat4 worldMat;
+uniform mat4 viewMat;
+uniform mat4 projMat;
 
 varying vec4 vcolor;
 
 void main()
 {
-    gl_Position = trans * vec4(pos,1);
+    gl_Position = projMat * viewMat * worldMat * vec4(pos,1); // gl_Position = projMat * viewMat * worldMat * vec4(pos,1); 순서 중요!!!!
     vcolor = clr;
 }
 </script>
@@ -74,26 +76,29 @@ window.onload = function()
 		];
 
 	var colors = [
-		1, 0, 0, 1,
-		0, 1, 0, 1,
-		0, 0, 1, 1,
-		1, 0, 0, 1,
-		0, 0, 1, 1,
-		1, 0, 1, 1
+		1, 0, 0, 1, // red
+		0, 1, 0, 1, // green 
+		0, 0, 1, 1, // blue
+		1, 0, 0, 1, // red
+		0, 0, 1, 1, // blue
+		1, 0, 1, 1  // purple
 		];
 	
-	var position_buffer = gl.createBuffer();
+  // passing scene data to vertex shader - position buffer, color buffer 
+
+	var position_buffer = gl.createBuffer(); // create a buffer object
 
 	gl.bindBuffer(
 		gl.ARRAY_BUFFER, 
-		position_buffer );
+		position_buffer ); // bind the buffer object to a target
 
 	gl.bufferData(
 		gl.ARRAY_BUFFER,
 		new Float32Array(positions),
-		gl.STATIC_DRAW );
+		gl.STATIC_DRAW ); // write data into the buffer object 
 
-	var color_buffer = gl.createBuffer();
+
+	var color_buffer = gl.createBuffer();  
 
 	gl.bindBuffer(
 		gl.ARRAY_BUFFER, 
@@ -112,16 +117,19 @@ window.onload = function()
 	// An application can have multiple shader programs and bind a different
 	// shader program for rendering different objects in a scene.
 	
+  // vertex shader : a vertex shader per object! 
+  // - attributes : the per-vertex data stored in the vertex array such as position
+  // - uniforms : the per-object data that remain constant for multiple executions of a shader
 	const vs_source = document.getElementById('vertexShader').text;
 	
-	const vs = gl.createShader(gl.VERTEX_SHADER);
-	gl.shaderSource(vs, vs_source);
-	gl.compileShader(vs);
+	const vs = gl.createShader(gl.VERTEX_SHADER); // create shader object 
+	gl.shaderSource(vs, vs_source); // store the shader programs 
+	gl.compileShader(vs); // compile the shader objects 
 
 	if ( ! gl.getShaderParameter(vs, gl.COMPILE_STATUS) ) {
-		alert( gl.getShaderInfoLog(vs) );
+		alert( gl.getShaderInfoLog(vs)); 
 		gl.deleteShader(vs);
-	}
+	} // check compiling 
 
 	const fs_source = document.getElementById('fragmentShader').text;
 
@@ -134,10 +142,10 @@ window.onload = function()
 		gl.deleteShader(fs);
 	}
 	
-	prog = gl.createProgram();
-	gl.attachShader(prog, vs);
-	gl.attachShader(prog, fs);
-	gl.linkProgram(prog);
+	prog = gl.createProgram(); // Create a program object
+	gl.attachShader(prog, vs); // Attach the shader objects to the program object 
+	gl.attachShader(prog, fs); 
+	gl.linkProgram(prog); // Link the program object 
 
 	if ( ! gl.getProgramParameter(prog, gl.LINK_STATUS) ) {
 		alert( gl.getProgramInfoLog(prog) );
@@ -149,16 +157,27 @@ window.onload = function()
 	// Before we render, we must set the values of the uniform variables.
 	// The uniform variables can be updated as frequently as needed.
 
-	var m = gl.getUniformLocation(prog,'trans');
+	var worldM = gl.getUniformLocation(prog,'worldMat');
+	var viewM = gl.getUniformLocation(prog,'viewMat');
+	var projM = gl.getUniformLocation(prog,'projMat');
 
-	var matrix = [
-		1,0,0,0,
-		0,1,0,0,
-		0,0,1,0,
-		0,0,0,1 ];
+	var worldMatrix = new Matrix4();
+  var viewMatrix = new Matrix4();
+  var projMatrix = new Matrix4();
+
+
+  viewMatrix.setLookAt(0,1,1,0,0,0,0,1,0); // eyeX, eyeY, eyeZ, atX, atY, atZ, upX, upY, upZ
+  projMatrix.setPerspective(90, 1, 1, 100);
+
+  
 
 	gl.useProgram(prog);
-	gl.uniformMatrix4fv( m, false, matrix );
+	gl.uniformMatrix4fv( worldM, false, worldMatrix.elements );
+	gl.uniformMatrix4fv( viewM, false, viewMatrix.elements );
+	gl.uniformMatrix4fv( projM, false, projMatrix.elements );
+
+  console.log(`View Matrix : ${viewMatrix.elements}`);
+  console.log(`Projection Matrix : ${projMatrix.elements}`);
 	
 	
 	///////////////////////////////////////////////////////////////////////
@@ -170,8 +189,8 @@ window.onload = function()
 
 	var p = gl.getAttribLocation(prog, 'pos');
 	gl.bindBuffer(gl.ARRAY_BUFFER, position_buffer);
-	gl.vertexAttribPointer(p, 3, gl.FLOAT, false, 0, 0);
-	gl.enableVertexAttribArray(p);
+	gl.vertexAttribPointer(p, 3, gl.FLOAT, false, 0, 0); // assign the buffer object to an attribute variable
+	gl.enableVertexAttribArray(p); // enable assignment 
 
 	var c = gl.getAttribLocation(prog, 'clr');
 	gl.bindBuffer(gl.ARRAY_BUFFER, color_buffer);
@@ -192,8 +211,8 @@ window.onload = function()
 </script>
 <style>
 #mycanvas {
-	 width: 50%;
-	height: 50%; 
+	width: 500px;
+	height: 500px; 
 	margin: auto;
 	display: block;
 	border: 1px solid black;
