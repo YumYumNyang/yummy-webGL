@@ -82,6 +82,12 @@ function main()
        -1.0,-1.0, -1.0, //v7 0,0
     	-1.0,-1.0, 1.0, //v2 1,0
 
+       // v6-v1-v2-v7 bottom
+       1.0, -1.0, 1.0, //v3 1,0 
+       -1.0, -1.0, 1.0, //v2 0,0
+       -1.0, -1.0,-1.0, //v7 0,1
+    	 1.0, -1.0,-1.0, //v4 1,1
+
 	]);
 	var texCoord = new Float32Array([
 		//up
@@ -109,6 +115,11 @@ function main()
 		0.0, 2.0,
 		0.0, 0.0,
 		2.0, 0.0,
+		//bottom
+		2.0, 0.0, 
+		2.0, 2.0,
+		0.0, 2.0,
+		0.0, 0.0,
 	]);
 
   	var indices = new Uint16Array([       // Indices of the vertices
@@ -117,6 +128,7 @@ function main()
     	 8, 9, 10,   8, 10, 11,  // right
     	 12, 13, 14, 12, 14, 15,  // back
     	 16, 17, 18,  16, 18, 19,  // left
+    	 20, 21, 22,  20, 22, 23,  // bottom
   	]);
 
 	var position_buffer = gl.createBuffer();
