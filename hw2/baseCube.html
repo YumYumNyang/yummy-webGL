@@ -1,0 +1,58 @@
+<!doctype html>
+	<html>
+	<head>
+		<title>Cube Example</title>
+		<script id="vertexShader" type="x-shader/x-vertex">
+			attribute vec3 pos;
+			attribute vec2 texCoord; 
+
+			uniform mat4 projMat;
+			uniform mat4 viewMat;
+			uniform mat4 worldMat;
+
+			varying vec2 vtexCoord;
+
+			void main()
+			{
+				gl_Position = projMat * viewMat * worldMat * vec4(pos,1);
+				vtexCoord = texCoord;
+			}
+		</script>
+
+		<script id="fragmentShader" type="x-shader/x-fragment">
+			precision mediump float;
+
+			uniform sampler2D sampler;
+			varying vec2 vtexCoord;
+
+			void main()
+			{
+				gl_FragColor = texture2D(sampler, vtexCoord);
+			}
+		</script>
+
+		<img id="textureImg" src="./square.png" width="0" height="0"></img>
+		<!-- Added to use utilities -->
+		<script src="./lib/webgl-utils.js"></script>
+		<script src="./lib/webgl-debug.js"></script>
+		<script src="./lib/cuon-utils.js"></script>
+		<script src="./lib/cuon-matrix.js"></script>
+		<script src="./lib/cuon-matrix.js"></script>
+		<script src="baseCube.js"></script>	
+		<style>
+			#mycanvas {
+				width: 500px;
+				height: 500px; 
+				margin: auto;
+				display: block;
+				border: 1px solid black;
+			}
+		</style>
+	</head>
+	<body onload="main()">
+		<canvas id="mycanvas"></canvas>
+		<form>
+			<input id="scaleBar" type="range" name="floats" min="0.1" max="4" step="0.02" value="1.00" onchange="setSpeed();"/>
+		</form>
+	</body>
+	</html>
