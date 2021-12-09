@@ -1,0 +1,70 @@
+<doctype html>
+	<html>
+	<head>
+		<title>Phong Lighting Example</title>
+
+		<!-- HW3: modify vertex and fragment shaders -->
+		<script id="vertexShader" type="x-shader/x-vertex">
+			attribute vec3 pos;
+			attribute vec3 normal;
+
+			uniform mat4 projMat;
+			uniform mat4 viewMat;
+			uniform mat4 worldMat;
+			uniform vec3 eyePos;
+			uniform mat4 normalMat; 
+
+			varying vec3 v_normal;
+			varying vec3 v_view;
+
+			void main()
+			{
+				v_normal = normal;
+				v_view = eyePos;
+				gl_Position = projMat * viewMat * worldMat * vec4(pos,1.0);
+			}
+		</script>
+
+		<script id="fragmentShader" type="x-shader/x-fragment">
+			precision mediump float;
+
+			uniform vec3 matSpec, matAmbi, matEmit;
+			uniform float matSh;
+			uniform vec3 srcDiff, srcSpec, srcAmbi;
+			uniform vec3 lightDir;
+
+			varying vec3 v_normal;
+			varying vec3 v_view;
+
+			void main()
+			{
+				vec3 light = normalize(lightDir);
+				vec3 matDiff = vec3(1.0, 0.0, 0.0);
+				vec3 temp = dot(light,v_view) * v_normal;
+				gl_FragColor = vec4(matDiff + temp, 1.0);
+			}
+		</script>
+		<!-- Added to use utilities -->
+		<script src="./lib/webgl-utils.js"></script>
+		<script src="./lib/webgl-debug.js"></script>
+		<script src="./lib/cuon-utils.js"></script>
+		<script src="./lib/cuon-matrix.js"></script>
+		<script src="./lib/cuon-matrix.js"></script>
+		<script src="PhongLighting.js"></script>	
+		<style>
+			#mycanvas {
+				width: 500px;
+				height: 500px; 
+				margin: auto;
+				display: block;
+				border: 1px solid black;
+			}
+		</style>
+	</head>
+	<body onload="main()">
+		<canvas id="mycanvas"></canvas>
+		<form>
+			<input id="scaleBar" type="range" name="floats" min="0" max="4" step="0.02" value="1.00" onchange="setSpeed();"/>
+		</form>
+	</body>
+	</html>
