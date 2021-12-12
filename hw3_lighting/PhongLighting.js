@@ -106,6 +106,40 @@ function main()
 	// TODO here
 
 
+  
+  var srcDiff = new Vector3([1, 1, 1]);
+  var srcSpec = new Vector3([1,1,1]);
+  var srcAmbi = new Vector3([0.8, 0.8, 0.8]);
+  
+  var matSpec = new Vector3([0.7, 0.7, 0.7]);
+  var matAmbi = new Vector3([0.2, 0.2, 0.2]);
+  var matEmit = new Vector3([0.2, 0.2, 0.0]);
+  var matSh = 32;
+  
+  var uSrcDiff = gl.getUniformLocation(prog, "srcDiff");
+  gl.uniform3fv(uSrcDiff, srcDiff.elements);
+  var uSrcSpec = gl.getUniformLocation(prog, "srcSpec");
+  gl.uniform3fv(uSrcSpec, srcSpec.elements);
+  var uSrcAmbi = gl.getUniformLocation(prog, "srcAmbi");
+  gl.uniform3fv(uSrcAmbi, srcAmbi.elements);
+  var uMatSpec = gl.getUniformLocation(prog, "matSpec");
+  gl.uniform3fv(uMatSpec, matSpec.elements);
+  var uMatAmbi = gl.getUniformLocation(prog, "matAmbi");
+  gl.uniform3fv(uMatAmbi, matAmbi.elements);
+  var uMatEmit = gl.getUniformLocation(prog, "matEmit");
+  gl.uniform3fv(uMatEmit, matEmit.elements);
+  var uMatSh = gl.getUniformLocation(prog, "matSh");
+  gl.uniform1f(uMatSh, matSh);
+  
+
+  // var refl = new Vector3([0.8,0.8,0.8]);
+  // var diff = Math.max(dot(normal, light), 0.0) * srcDiff * matDiff; 
+  // var spec = Math.pow(Math.max(dot(refl, view), 0.0), matSh) * srcSpec * matSpec;
+  // var ambi = srcAmbi * matAmbi;
+  // var fragColor = vec4(diff + spec + ambi + matEmit, 1.0);            
+
+  
+
 	var currentAngle = 0.0;
 	var loop = function (){
 		currentAngle = animate(currentAngle);

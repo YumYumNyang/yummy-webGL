@@ -1,4 +1,4 @@
-<doctype html>
+<!doctype html>
 	<html>
 	<head>
 		<title>Phong Lighting Example</title>
@@ -38,10 +38,22 @@
 
 			void main()
 			{
+        vec3 normal = normalize(v_normal);
+        vec3 view = normalize(v_view);
 				vec3 light = normalize(lightDir);
+
+        vec3 srcDiff = vec3(1.0, 1.0, 1.0);
 				vec3 matDiff = vec3(1.0, 0.0, 0.0);
-				vec3 temp = dot(light,v_view) * v_normal;
-				gl_FragColor = vec4(matDiff + temp, 1.0);
+        
+        vec3 diff = max(dot(normal, light), 0.0) * srcDiff * matDiff;
+
+        vec3 refl = 2.0 * normal * dot(normal, light) - light; 
+        vec3 spec = pow(max(dot(refl, view), 0.0), matSh) * srcSpec * matSpec;
+
+        vec3 ambi = srcAmbi * matAmbi;
+
+				// vec3 temp = dot(light,v_view) * v_normal; 
+				gl_FragColor = vec4(diff + spec + ambi + matEmit, 1.0);
 			}
 		</script>
 		<!-- Added to use utilities -->
